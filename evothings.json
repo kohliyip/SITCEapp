@@ -1,0 +1,23 @@
+{
+  "uuid": "23387664-eeaa-4705-9c20-c79ae83304e5",
+  "plugins": [],
+  "libraries": [
+    {
+      "name": "framework7",
+      "version": "1.4.2"
+    },
+    {
+      "name": "jquery",
+      "version": "2.1.1"
+    }
+  ],
+  "name": "sitce",
+  "title": "SITCE Mock Up Header Cover",
+  "description": "App oneline description.",
+  "long-description": "App long description.",
+  "version": "1.0.0",
+  "author-name": "Koh Li Yip",
+  "author-email": "koh.liyip@stee.stengg.com",
+  "author-url": "stee.stengg",
+  "cordova-id": "com.evothings.samples.app"
+}

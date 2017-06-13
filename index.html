@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<!--
+This is an app that demonstrates how to control an Arduino board
+using BLE (Bluetooth Low Energy).
+Please note that you must use a HM-10 compatible module for this example to work.
+-->
+<head>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, user-scalable=no,
+		shrink-to-fit=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" />
+
+	<title>SITCE Mock Up Motorized Header Cover Control</title>
+
+	<style>
+		@import 'ui/css/evothings-app.css';
+	</style>
+
+	<script>
+	// Redirect console.log to Evothings Workbench.
+	if (window.hyper && window.hyper.log) { console.log = hyper.log }
+	window.onerror = function(msg, url, line)
+	{
+		console.log(msg + ": " + url + ":" + line);
+	};
+	</script>
+
+	<script src="cordova.js"></script>
+	<script src="libs/jquery/jquery.js"></script>
+	<script src="libs/evothings/evothings.js"></script>
+	<script src="libs/evothings/ui/ui.js"></script>
+	<script src="libs/evothings/arduinoble/arduinoble.js"></script>
+
+	<style>
+	#divr {
+		float:left;
+		width: 15px;
+		height: 150px;
+		background-color: black;
+
+		transform-origin: top left;
+		-ms-transform-origin: top left;
+		-webkit-transform-origin: top left;
+		-moz-transform-origin: top left;
+		-o-transform-origin: top left;
+
+		transition: all 6s ease-in-out;
+		-ms-transition: all 6s ease-in-out;
+		-webkit-transition: all 6s ease-in-out;
+		-moz-transition: all 6s ease-in-out;
+		-o-transition: all 6s ease-in-out;
+	}
+	</style>
+
+	<style>
+	#divh {
+		float:left;
+		width:45px;
+		height: 150px;
+		background-color: grey;
+	}
+	</style>
+
+
+
+</head>
+
+<body ontouchstart=""><!-- ontouchstart="" enables low-delay CSS transitions. -->
+
+	<header>
+		<button class="back" onclick="history.back()">
+			<img src="ui/images/arrow-left.svg"/>
+		</button>
+		<img class="logotype" src="http://www.sitf.org.sg/images/SBA_ST%20Electronics_Horizontal%20CMYK%20logo.jpg" alt="STEE" width="180" height="100" />
+		<!--<button class="menu" onclick=""><img src="http://www.sitf.org.sg/images/SBA_ST%20Electronics_Horizontal%20CMYK%20logo.jpg" /></button>-->
+	</header>
+	<script type="text/javascript"
+	src ="http://jqueryrotate.googlecode.com/svn/trunk/jQueryRotate.js">
+	</script>
+	
+	
+	<h1>SITCE Demo Control</h1>
+
+	<button class="blue wide" onclick="app.connect()">CONNECT TO MOCK UP</button>
+
+	<br />
+
+	<h2> Header Cover Control </h2>
+
+	<button class="red wide big" onclick="app.openCover()">OPEN HEADER COVER</button>
+	
+	<br />
+
+	<button class="green wide big" onclick="app.closeCover()">CLOSE HEADER COVER</button>
+	
+	<br />
+	<br />
+	
+	<div id ="wrapper">
+		<div id="divh"></div>
+		<div id="divr"></div>
+	</div>
+	
+	<br />
+	<br />
+	<br />
+	<br />
+
+	<h2> Train Car Loading </h2>
+
+	<font size="2.5">low</font> <input id="crange" type="range" min="0" max="100" value="50" step="1" onchange="app.crowdChange()"/> <font size="2.5">high</font>
+
+	<br />
+	<br />
+	<br />
+	<h3> Terminal Output: </h3>
+	<p id="info">Initializing...</p>
+	
+	<script>
+
+	// Application object.
+	var app = {}
+	//var curPos;
+	var curDeg = 0;
+
+	// Command String
+	function message(value){
+		this.value = value;
+		this.changeValue = function(newValue) {
+			this.value = newValue;
+		}
+	}
+
+	var commandSent = new message("0");
+	var crowdSent = new message("55");
+	
+	// Connected device.
+	app.device = null;
+
+
+
+
+	// Rotate header cover in app
+	/*
+	var el = document.getElementbyId('divr');
+	var st = window.getComputedStyle(el, null);
+	var tr = st.style.webkitTransform = 'rotate(' +curDeg+'deg)' ||
+			 st.style.mozTransform = 'rotate(' +curDeg+'deg)'||
+			 st.style.msTransform = 'rotate(' +curDeg+'deg)'||
+			 st.style.oTransform = 'rotate(' +curDeg+'deg)'||
+			 st.style.tranform = 'rotate(' +curDeg+'deg)'||
+			 "FAIL";
+
+	console.log('Matrix: ' + tr);
+
+	var values = tr.split('(')[1].split(')')[0].split(',');
+	var a = values[0];
+	var b = values[1];
+	var c = values[2];
+	var d = values[3];
+
+	var scale = Math.sqrt(a*a+b*b);
+	var
+	*/
+	
+
+	// Read data from Arduino HM10
+	/*
+	var rawData = new DataView(data).getUint16(0, true)
+	var curPosString = parseInt(rawData,2).toString(10);
+	var curPos = parseInt(curPosString);
+	var curDegNum = curPos/120*90;
+	var curDeg = curDegNum.toString();
+	*/
+
+
+
+	// Open Header Cover.
+	app.openCover = function()
+	{
+		curDeg = '-90';
+		$(function() {
+			var $elie = $("#divr");
+			rotate(curDeg);
+			function rotate(degree){
+				$elie.css({WebkitTransform: 'rotate('+degree+'deg)'});
+				$elie.css({'-moz-transform':'rotate('+degree+'deg)'});
+			}
+		});
+
+		commandSent.changeValue("1");
+		app.showMessage('Open Command Sent');
+		app.sendMessage();
+		
+	}
+
+
+	// Close Header Cover.
+	app.closeCover = function()
+	{
+		curDeg = '0';
+		$(function() {
+			var $elie = $("#divr");
+			rotate(curDeg);
+			function rotate(degree){
+				$elie.css({WebkitTransform: 'rotate('+degree+'deg)'});
+				$elie.css({'-moz-transform':'rotate('+degree+'deg)'});
+			}
+		});
+
+		commandSent.changeValue("0");
+		app.showMessage('Close Command Sent');
+		app.sendMessage();
+		
+	}
+
+	app.showMessage = function(info)
+	{
+		document.getElementById('info').innerHTML = info
+	}
+
+	// Change crowd numbers.
+	app.crowdChange = function()
+	{
+		crowdSent.changeValue(document.getElementById('crange').value);
+
+		app.showMessage("Crowd Load Sent = " + crowdSent.value);
+		app.sendMessage();
+	}
+
+	app.sendMessage = function()
+	{
+		var message = String("\<" + commandSent.value + crowdSent.value + "\>");
+		app.showMessage("Sent message is " + message);
+		app.device.writeDataArray(message, '0000ffe1-0000-1000-8000-00805f9b34fb');
+	}
+
+	// Called when BLE and other native functions are available.
+	app.onDeviceReady = function()
+	{
+		app.showMessage('Connect to mock up');
+	};
+
+	app.connect = function()
+	{
+		evothings.arduinoble.close();
+
+		evothings.arduinoble.connect(
+			'BT05', // Name of the module.
+			function(device)
+			{
+				app.device = device;
+				app.showMessage('Connected!');
+			},
+			function(errorCode)
+			{
+				app.showMessage('Connect error: ' + errorCode + '.');
+			});
+	};
+
+	document.addEventListener(
+		'deviceready',
+		function() { evothings.scriptsLoaded(app.onDeviceReady) },
+		false);
+	</script>
+
+</body>
+
+</html>
